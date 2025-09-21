@@ -1,0 +1,654 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CraftHub - AI-Powered Artisan Marketplace</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .header h1 {
+            color: white;
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        .header p {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 1.1rem;
+        }
+
+        .main-nav {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+
+        .nav-btn {
+            background: rgba(255, 255, 255, 0.9);
+            border: none;
+            padding: 15px 30px;
+            border-radius: 50px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .nav-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+            background: white;
+        }
+
+        .nav-btn.active {
+            background: #4CAF50;
+            color: white;
+        }
+
+        .section {
+            display: none;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .section.active {
+            display: block;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #555;
+        }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .image-upload {
+            border: 3px dashed #ddd;
+            border-radius: 15px;
+            padding: 40px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .image-upload:hover {
+            border-color: #667eea;
+            background: rgba(102, 126, 234, 0.05);
+        }
+
+        .image-upload.dragover {
+            border-color: #4CAF50;
+            background: rgba(76, 175, 80, 0.1);
+        }
+
+        .upload-icon {
+            font-size: 3rem;
+            color: #ddd;
+            margin-bottom: 15px;
+        }
+
+        .preview-image {
+            max-width: 300px;
+            max-height: 300px;
+            border-radius: 10px;
+            margin: 20px 0;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 50px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 25px;
+            margin-top: 30px;
+        }
+
+        .product-card {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            border: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        .product-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.15);
+        }
+
+        .product-image {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
+
+        .product-info {
+            padding: 20px;
+        }
+
+        .product-name {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: #333;
+        }
+
+        .product-description {
+            color: #666;
+            margin-bottom: 15px;
+            line-height: 1.5;
+        }
+
+        .product-price {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: #4CAF50;
+            margin-bottom: 15px;
+        }
+
+        .seller-info {
+            background: rgba(102, 126, 234, 0.1);
+            padding: 10px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            font-size: 0.9rem;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            color: #667eea;
+            font-weight: 600;
+        }
+
+        .spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .success-message {
+            background: rgba(76, 175, 80, 0.1);
+            border: 2px solid #4CAF50;
+            color: #2E7D32;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 20px 0;
+            text-align: center;
+            font-weight: 600;
+        }
+
+        .filter-section {
+            background: rgba(102, 126, 234, 0.1);
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+        }
+
+        .filter-row {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .filter-group {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        @media (max-width: 768px) {
+            .main-nav {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .filter-row {
+                flex-direction: column;
+            }
+
+            .header h1 {
+                font-size: 2rem;
+            }
+
+            .container {
+                padding: 10px;
+            }
+
+            .section {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎨 CraftHub</h1>
+            <p>AI-Powered Marketplace for Local Artisans</p>
+        </div>
+
+        <div class="main-nav">
+            <button class="nav-btn active" onclick="showSection('marketplace')">🛍️ Browse Products</button>
+            <button class="nav-btn" onclick="showSection('seller')">👨‍🎨 Sell Products</button>
+        </div>
+
+        <!-- Marketplace Section -->
+        <div id="marketplace" class="section active">
+            <h2>🌟 Discover Handcrafted Treasures</h2>
+            
+            <div class="filter-section">
+                <h3>Filter Products</h3>
+                <div class="filter-row">
+                    <div class="filter-group">
+                        <label>Category:</label>
+                        <select id="categoryFilter" onchange="filterProducts()">
+                            <option value="">All Categories</option>
+                            <option value="pottery">Pottery</option>
+                            <option value="textiles">Textiles</option>
+                            <option value="jewelry">Jewelry</option>
+                            <option value="woodwork">Woodwork</option>
+                            <option value="paintings">Paintings</option>
+                            <option value="metalcraft">Metalcraft</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label>Max Price (₹):</label>
+                        <input type="number" id="priceFilter" placeholder="Enter max price" onchange="filterProducts()">
+                    </div>
+                    <div class="filter-group">
+                        <label>Search:</label>
+                        <input type="text" id="searchFilter" placeholder="Search products..." oninput="filterProducts()">
+                    </div>
+                </div>
+            </div>
+
+            <div id="productsContainer" class="products-grid"></div>
+        </div>
+
+        <!-- Seller Section -->
+        <div id="seller" class="section">
+            <h2>🚀 Start Selling Your Crafts</h2>
+            <form id="sellerForm">
+                <div class="form-group">
+                    <label>Product Name:</label>
+                    <input type="text" id="productName" required placeholder="Enter your product name">
+                </div>
+
+                <div class="form-group">
+                    <label>Category:</label>
+                    <select id="productCategory" required>
+                        <option value="">Select Category</option>
+                        <option value="pottery">Pottery & Ceramics</option>
+                        <option value="textiles">Textiles & Fabrics</option>
+                        <option value="jewelry">Jewelry & Accessories</option>
+                        <option value="woodwork">Woodwork & Furniture</option>
+                        <option value="paintings">Paintings & Art</option>
+                        <option value="metalcraft">Metalcraft</option>
+                        <option value="other">Other Crafts</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Product Image:</label>
+                    <div class="image-upload" id="imageUpload">
+                        <div class="upload-icon">📷</div>
+                        <p>Drag & drop your image here or click to browse</p>
+                        <input type="file" id="imageInput" accept="image/*" style="display: none;">
+                    </div>
+                    <img id="imagePreview" class="preview-image" style="display: none;">
+                </div>
+
+                <div class="form-group">
+                    <label>AI Generated Description:</label>
+                    <textarea id="aiDescription" rows="4" readonly placeholder="Upload an image to generate AI description..."></textarea>
+                    <div class="loading" id="descriptionLoading">
+                        <div class="spinner"></div>
+                        <p>AI is analyzing your image...</p>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Price (₹):</label>
+                    <input type="number" id="productPrice" required placeholder="Enter price in rupees" min="1">
+                </div>
+
+                <div class="form-group">
+                    <label>Your Name:</label>
+                    <input type="text" id="sellerName" required placeholder="Enter your full name">
+                </div>
+
+                <div class="form-group">
+                    <label>Phone Number:</label>
+                    <input type="tel" id="sellerPhone" required placeholder="Enter your phone number">
+                </div>
+
+                <div class="form-group">
+                    <label>Email:</label>
+                    <input type="email" id="sellerEmail" required placeholder="Enter your email address">
+                </div>
+
+                <div class="form-group">
+                    <label>Location:</label>
+                    <input type="text" id="sellerLocation" required placeholder="Enter your city/area">
+                </div>
+
+                <button type="submit" class="btn">🚀 List My Product</button>
+            </form>
+
+            <div id="successMessage" style="display: none;"></div>
+        </div>
+    </div>
+
+    <script>
+        // Sample products data
+        let products = [
+            {
+                id: 1,
+                name: "Handwoven Silk Saree",
+                category: "textiles",
+                price: 8500,
+                image: "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMzAwIiBoZWlnaHQ9IjIwMCIgZmlsbD0iIzg3Q0VFQiIvPjx0ZXh0IHg9IjUwJSIgeT0iNTAlIiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iMTgiIGZpbGw9IiNmZmYiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGR5PSIuM2VtIj5TaWxrIFNhcmVlPC90ZXh0Pjwvc3ZnPg==",
+                description: "Beautiful handwoven silk saree with intricate golden border patterns. Made using traditional techniques passed down through generations.",
+                seller: { name: "Meera Devi", phone: "+91-9876543210", email: "meera@example.com", location: "Varanasi, UP" }
+            },
+            {
+                id: 2,
+                name: "Clay Terracotta Vase",
+                category: "pottery",
+                price: 1200,
+                image: "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMzAwIiBoZWlnaHQ9IjIwMCIgZmlsbD0iI0NEODUzRiIvPjx0ZXh0IHg9IjUwJSIgeT0iNTAlIiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iMTgiIGZpbGw9IiNmZmYiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGR5PSIuM2VtIj5DbGF5IFZhc2U8L3RleHQ+PC9zdmc+",
+                description: "Handcrafted terracotta vase with rustic charm. Perfect for home decoration and gifting. Made from locally sourced clay.",
+                seller: { name: "Ravi Kumar", phone: "+91-9876543211", email: "ravi@example.com", location: "Khurja, UP" }
+            },
+            {
+                id: 3,
+                name: "Silver Jhumka Earrings",
+                category: "jewelry",
+                price: 2800,
+                image: "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMzAwIiBoZWlnaHQ9IjIwMCIgZmlsbD0iI0M0QzRDNCIvPjx0ZXh0IHg9IjUwJSIgeT0iNTAlIiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iMTgiIGZpbGw9IiMzMzMiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGR5PSIuM2VtIj5TaWx2ZXIgSnVtaGthPC90ZXh0Pjwvc3ZnPg==",
+                description: "Elegant silver jhumka earrings with traditional design. Handcrafted by skilled artisans using pure silver.",
+                seller: { name: "Priya Sharma", phone: "+91-9876543212", email: "priya@example.com", location: "Jaipur, RJ" }
+            }
+        ];
+
+        // Show/hide sections
+        function showSection(sectionId) {
+            const sections = document.querySelectorAll('.section');
+            const navBtns = document.querySelectorAll('.nav-btn');
+            
+            sections.forEach(s => s.classList.remove('active'));
+            navBtns.forEach(btn => btn.classList.remove('active'));
+            
+            document.getElementById(sectionId).classList.add('active');
+            event.target.classList.add('active');
+            
+            if (sectionId === 'marketplace') {
+                displayProducts();
+            }
+        }
+
+        // Display products
+        function displayProducts(filteredProducts = null) {
+            const container = document.getElementById('productsContainer');
+            const productsToShow = filteredProducts || products;
+            
+            if (productsToShow.length === 0) {
+                container.innerHTML = '<p style="text-align: center; color: #666; font-size: 1.2rem;">No products found matching your criteria.</p>';
+                return;
+            }
+            
+            container.innerHTML = productsToShow.map(product => `
+                <div class="product-card">
+                    <img src="${product.image}" alt="${product.name}" class="product-image">
+                    <div class="product-info">
+                        <h3 class="product-name">${product.name}</h3>
+                        <p class="product-description">${product.description}</p>
+                        <div class="product-price">₹${product.price.toLocaleString('en-IN')}</div>
+                        <div class="seller-info">
+                            <strong>Seller:</strong> ${product.seller.name}<br>
+                            <strong>Location:</strong> ${product.seller.location}
+                        </div>
+                        <button class="btn" onclick="contactSeller(${product.id})">💬 Contact Seller</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Filter products
+        function filterProducts() {
+            const category = document.getElementById('categoryFilter').value;
+            const maxPrice = parseFloat(document.getElementById('priceFilter').value) || Infinity;
+            const search = document.getElementById('searchFilter').value.toLowerCase();
+            
+            const filtered = products.filter(product => {
+                const matchesCategory = !category || product.category === category;
+                const matchesPrice = product.price <= maxPrice;
+                const matchesSearch = !search || 
+                    product.name.toLowerCase().includes(search) ||
+                    product.description.toLowerCase().includes(search);
+                
+                return matchesCategory && matchesPrice && matchesSearch;
+            });
+            
+            displayProducts(filtered);
+        }
+
+        // Contact seller
+        function contactSeller(productId) {
+            const product = products.find(p => p.id === productId);
+            if (product) {
+                const message = `Hi ${product.seller.name}, I'm interested in your ${product.name} listed for ₹${product.price.toLocaleString('en-IN')}. Can we discuss?`;
+                const whatsappUrl = `https://wa.me/${product.seller.phone.replace(/\D/g, '')}?text=${encodeURIComponent(message)}`;
+                window.open(whatsappUrl, '_blank');
+            }
+        }
+
+        // Image upload handling
+        const imageUpload = document.getElementById('imageUpload');
+        const imageInput = document.getElementById('imageInput');
+        const imagePreview = document.getElementById('imagePreview');
+
+        imageUpload.addEventListener('click', () => imageInput.click());
+        imageUpload.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            imageUpload.classList.add('dragover');
+        });
+        imageUpload.addEventListener('dragleave', () => {
+            imageUpload.classList.remove('dragover');
+        });
+        imageUpload.addEventListener('drop', (e) => {
+            e.preventDefault();
+            imageUpload.classList.remove('dragover');
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                handleImageUpload(files[0]);
+            }
+        });
+
+        imageInput.addEventListener('change', (e) => {
+            if (e.target.files.length > 0) {
+                handleImageUpload(e.target.files[0]);
+            }
+        });
+
+        function handleImageUpload(file) {
+            if (file.type.startsWith('image/')) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    imagePreview.src = e.target.result;
+                    imagePreview.style.display = 'block';
+                    generateAIDescription(file);
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        // AI Description Generation (Simulated)
+        function generateAIDescription(file) {
+            const loadingDiv = document.getElementById('descriptionLoading');
+            const descriptionTextarea = document.getElementById('aiDescription');
+            
+            loadingDiv.style.display = 'block';
+            descriptionTextarea.value = '';
+            
+            // Simulate AI processing delay
+            setTimeout(() => {
+                const descriptions = [
+                    "This beautifully crafted item showcases exceptional artisanship with intricate details and vibrant colors. The careful attention to traditional techniques is evident in every curve and pattern, making it a perfect addition to any collection.",
+                    "A stunning handmade creation that reflects the rich cultural heritage of Indian craftsmanship. The unique design elements and quality materials used demonstrate the maker's skill and dedication to their art.",
+                    "This exquisite piece combines traditional methods with artistic flair, resulting in a one-of-a-kind creation. The fine workmanship and authentic style make it an ideal choice for those who appreciate genuine handcrafted items.",
+                    "An impressive display of local artisanship featuring distinctive design elements and superior craftsmanship. The attention to detail and use of quality materials make this piece truly special and culturally significant."
+                ];
+                
+                const randomDescription = descriptions[Math.floor(Math.random() * descriptions.length)];
+                descriptionTextarea.value = randomDescription;
+                loadingDiv.style.display = 'none';
+            }, 2000);
+        }
+
+        // Form submission
+        document.getElementById('sellerForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            
+            const newProduct = {
+                id: products.length + 1,
+                name: document.getElementById('productName').value,
+                category: document.getElementById('productCategory').value,
+                price: parseFloat(document.getElementById('productPrice').value),
+                image: document.getElementById('imagePreview').src,
+                description: document.getElementById('aiDescription').value,
+                seller: {
+                    name: document.getElementById('sellerName').value,
+                    phone: document.getElementById('sellerPhone').value,
+                    email: document.getElementById('sellerEmail').value,
+                    location: document.getElementById('sellerLocation').value
+                }
+            };
+            
+            products.push(newProduct);
+            
+            // Show success message
+            const successDiv = document.getElementById('successMessage');
+            successDiv.innerHTML = `
+                <div class="success-message">
+                    🎉 Product listed successfully! Your "${newProduct.name}" is now live on the marketplace.
+                    <br><br>
+                    <button class="btn" onclick="showSection('marketplace'); displayProducts();">View Your Product</button>
+                </div>
+            `;
+            successDiv.style.display = 'block';
+            
+            // Reset form
+            document.getElementById('sellerForm').reset();
+            imagePreview.style.display = 'none';
+            document.getElementById('aiDescription').value = '';
+            
+            // Scroll to success message
+            successDiv.scrollIntoView({ behavior: 'smooth' });
+        });
+
+        // Initialize
+        displayProducts();
+    </script>
+</body>
+</html>
